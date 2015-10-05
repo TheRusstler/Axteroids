@@ -8,13 +8,12 @@ class SpaceShip {
 	final static double SHIP_WIDTH = 10, SHIP_LENGTH = 15, LINE_WIDTH_EXTERNAL = 2;
 	final static double JOYSTICK_DAMPING = 3000d;
 
+	Color color;
+	Polygon polygon;
+	int acceleration, turn;
+	
 	private Point2D position, velocity = new Point2D(0, 0);
 	private double direction = 0;
-	
-	Polygon polygon;
-	public Color color;
-
-	public int acceleration, turn;
 
 	public SpaceShip() {
 		polygon = new Polygon();
@@ -28,14 +27,15 @@ class SpaceShip {
 
 	public void updatePosition(double sizeSceneX, double sizeSceneY) {
 		position = position.add(velocity.getX(), velocity.getY());
+		jumpBounderies(sizeSceneX, sizeSceneY);
+		
+		updateDirection();
+		
+		polygon.setTranslateX(position.getX());
+		polygon.setTranslateY(position.getY());
+	}
 
-		if (position.getX() > sizeSceneX || position.getX() < 0) {
-			position = position.subtract(position.getX(), 0);
-		}
-		if (position.getY() > sizeSceneY || position.getY() < 0) {
-			position = position.subtract(0, position.getY());
-		}
-
+	private void updateDirection() {
 		if (direction > Math.PI * 2) {
 			direction = 0;
 		}
@@ -46,13 +46,37 @@ class SpaceShip {
 		polygon.setRotate(-90 - direction * 180 / Math.PI); // setRotate
 																// works in
 																// degrees
-		polygon.setTranslateX(position.getX());
-		polygon.setTranslateY(position.getY());
+	}
+
+	private void jumpBounderies(double sizeSceneX, double sizeSceneY) {
+		if (position.getX() > sizeSceneX) {
+			position = position.subtract(position.getX(), 0);
+		}
+		if (position.getY() > sizeSceneY) {
+			position = position.subtract(0, position.getY());
+		}
+		if(position.getX() < 0)
+		{
+			position = position.add(sizeSceneX, 0);
+		}
+		if(position.getY() < 0)
+		{
+			position = position.add(0, sizeSceneY);
+		}
 	}
 
 	public void updateVelocity() {
-		increaseSpeed(acceleration / JOYSTICK_DAMPING);
+		double accel = acceleration / JOYSTICK_DAMPING;
+		velocity = velocity.add(Math.cos(-direction) * accel, Math.sin(-direction) * accel);
 		turn(turn / JOYSTICK_DAMPING);
+	}
+
+	public void turn(double d) {
+		direction = direction + d;
+		if (direction > Math.PI * 2)
+			direction = 0;
+		if (direction < 0)
+			direction = Math.PI * 2;
 	}
 	
 	public void center()
@@ -64,26 +88,4 @@ class SpaceShip {
 	{
 		velocity = new Point2D(0, 0);
 	}
-
-	public double getDirection() {
-		return direction;
-	}
-
-	public void setDirection(double direction) {
-		this.direction = direction;
-	}
-
-	public void increaseSpeed(double accel) {
-		velocity = velocity.add(Math.cos(-direction) * accel, Math.sin(-direction) * accel);
-		System.out.println(velocity);
-	}
-
-	public void turn(double d) {
-		direction = direction + d;
-		if (direction > Math.PI * 2)
-			direction = 0;
-		if (direction < 0)
-			direction = Math.PI * 2;
-	}
-
 }
