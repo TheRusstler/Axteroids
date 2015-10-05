@@ -1,14 +1,12 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import com.phidgets.*;
 import com.phidgets.event.*;
 
-public class Axteroids extends Application
-		implements AttachListener, DetachListener, InputChangeListener, SensorChangeListener {
+public class Axteroids extends Application implements InputChangeListener, SensorChangeListener {
 
 	static final int IK_SERIAL = 274071;
 	static final int X_INDEX = 0, Y_INDEX = 1, ROTATION_SENSOR_INDEX = 0;
@@ -49,8 +47,6 @@ public class Axteroids extends Application
 	private void registerEvents() {
 		try {
 			phidget = new InterfaceKitPhidget();
-			phidget.addAttachListener(this);
-			phidget.addDetachListener(this);
 			phidget.addSensorChangeListener(this);
 			phidget.addInputChangeListener(this);
 			phidget.open(IK_SERIAL);
@@ -63,24 +59,6 @@ public class Axteroids extends Application
 	public void loop() {
 		spaceship.updateVelocity();
 		spaceship.updatePosition(scene.getWidth(), scene.getHeight());
-	}
-
-	public void processKeyPress(KeyEvent ke, boolean isPressed) {
-		switch (ke.getCode()) {
-		case UP:
-			spaceship.isAccelerating = isPressed;
-			break;
-		case DOWN:
-			spaceship.isDecelerating = isPressed;
-			break;
-		case LEFT:
-			spaceship.isTurningLeft = isPressed;
-			break;
-		case RIGHT:
-			spaceship.isTurningRight = isPressed;
-		default:
-			break;
-		}
 	}
 
 	@Override
@@ -113,16 +91,5 @@ public class Axteroids extends Application
 				spaceship.stop();
 			}
 		}
-
-	}
-
-	@Override
-	public void detached(DetachEvent de) {
-		System.out.println("Detached!");
-	}
-
-	@Override
-	public void attached(AttachEvent ae) {
-		System.out.println("Attached!");
 	}
 }
