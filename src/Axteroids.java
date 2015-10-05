@@ -11,8 +11,7 @@ public class Axteroids extends Application
 		implements AttachListener, DetachListener, InputChangeListener, SensorChangeListener {
 
 	static final int IK_SERIAL = 274071;
-	static final int X_INDEX = 0;
-	static final int Y_INDEX = 1;
+	static final int X_INDEX = 0, Y_INDEX = 1, ROTATION_SENSOR_INDEX = 0;
 
 	SpaceShip spaceship;
 	Scene scene;
@@ -27,7 +26,7 @@ public class Axteroids extends Application
 	public void start(Stage stage) {
 		root = new Pane();
 		spaceship = new SpaceShip();
-		
+
 		root.getChildren().add(spaceship.shipPolygon);
 		scene = new Scene(root, 800, 600);
 
@@ -86,22 +85,35 @@ public class Axteroids extends Application
 
 	@Override
 	public void sensorChanged(SensorChangeEvent se) {
-		//System.out.println("Sensor changed!");
-
 		switch (se.getIndex()) {
 		case X_INDEX:
-			spaceship.turn = se.getValue() - 500;
+			if (isSensorNearCentre(se) == false)
+				spaceship.turn = se.getValue() - 500;
+			else
+				spaceship.turn = 0;
 			break;
 
 		case Y_INDEX:
-			spaceship.acceleration = se.getValue() - 500;
+			if (isSensorNearCentre(se) == false)
+				spaceship.acceleration = se.getValue() - 500;
+			else
+				spaceship.acceleration = 0;
 			break;
 		}
 	}
 
+	boolean isSensorNearCentre(SensorChangeEvent se) {
+		return se.getValue() > 400 && se.getValue() < 600;
+	}
+
 	@Override
 	public void inputChanged(InputChangeEvent ie) {
-		//System.out.println("Input changed!");
+		if (ie.getIndex() == ROTATION_SENSOR_INDEX) {
+			if (ie.getState() == true) {
+				spaceship.stop();
+			}
+		}
+
 	}
 
 	@Override

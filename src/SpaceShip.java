@@ -63,6 +63,12 @@ class SpaceShip {
 		posX = 400;
 		posY = 300;
 	}
+	
+	public void stop()
+	{
+		speedX = 0;
+		speedY = 0;
+	}
 
 	public double getDirection() {
 		return direction;
