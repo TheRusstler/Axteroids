@@ -1,18 +1,20 @@
 package uk.ac.stand.cs.cs5041.axteroids;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.geometry.Point2D;
 
 class SpaceShip {
 
 	final static double SHIP_WIDTH = 10, SHIP_LENGTH = 15, LINE_WIDTH_EXTERNAL = 2;
 	final static double JOYSTICK_DAMPING = 3000d;
 
-	private double posX = 0, posY = 0, speedX = 0, speedY = 0, direction = 0;
+	private Point2D position, velocity = new Point2D(0, 0);
+	private double direction = 0;
+	
 	Polygon polygon;
 	public Color color;
 
 	public int acceleration, turn;
-	public boolean isAccelerating, isDecelerating, isTurningLeft, isTurningRight;
 
 	public SpaceShip() {
 		polygon = new Polygon();
@@ -25,21 +27,15 @@ class SpaceShip {
 	}
 
 	public void updatePosition(double sizeSceneX, double sizeSceneY) {
-		posX = posX + speedX;
-		posY = posY + speedY;
+		position = position.add(velocity.getX(), velocity.getY());
 
-		if (posX > sizeSceneX) {
-			posX = posX % sizeSceneX;
+		if (position.getX() > sizeSceneX || position.getX() < 0) {
+			position = position.subtract(position.getX(), 0);
 		}
-		if (posY > sizeSceneY) {
-			posY = posY % sizeSceneY;
+		if (position.getY() > sizeSceneY || position.getY() < 0) {
+			position = position.subtract(0, position.getY());
 		}
-		if (posX < 0) {
-			posX = sizeSceneX;
-		}
-		if (posY < 0) {
-			posY = sizeSceneY;
-		}
+
 		if (direction > Math.PI * 2) {
 			direction = 0;
 		}
@@ -50,8 +46,8 @@ class SpaceShip {
 		polygon.setRotate(-90 - direction * 180 / Math.PI); // setRotate
 																// works in
 																// degrees
-		polygon.setTranslateX(posX);
-		polygon.setTranslateY(posY);
+		polygon.setTranslateX(position.getX());
+		polygon.setTranslateY(position.getY());
 	}
 
 	public void updateVelocity() {
@@ -61,14 +57,12 @@ class SpaceShip {
 	
 	public void center()
 	{
-		posX = 400;
-		posY = 300;
+		position = new Point2D(400, 300);
 	}
 	
 	public void stop()
 	{
-		speedX = 0;
-		speedY = 0;
+		velocity = new Point2D(0, 0);
 	}
 
 	public double getDirection() {
@@ -80,8 +74,8 @@ class SpaceShip {
 	}
 
 	public void increaseSpeed(double accel) {
-		speedX = speedX + Math.cos(-direction) * accel;
-		speedY = speedY + Math.sin(-direction) * accel;
+		velocity = velocity.add(Math.cos(-direction) * accel, Math.sin(-direction) * accel);
+		System.out.println(velocity);
 	}
 
 	public void turn(double d) {

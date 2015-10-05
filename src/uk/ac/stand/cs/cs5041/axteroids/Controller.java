@@ -5,6 +5,7 @@ import com.phidgets.PhidgetException;
 import com.phidgets.event.*;
 
 public class Controller  implements InputChangeListener, SensorChangeListener {
+	
 	static final int IK_SERIAL = 274071, ROTATION_SENSOR_INDEX = 0;
 	static final int X_INDEX = 0, Y_INDEX = 1;
 	
