@@ -10,14 +10,24 @@ import com.phidgets.event.*;
 public class Axteroids extends Application
 		implements AttachListener, DetachListener, InputChangeListener, SensorChangeListener {
 
+	static final int IK_SERIAL = 274071;
+	static final int X_INDEX = 0;
+	static final int Y_INDEX = 1;
+
 	SpaceShip spaceship;
 	Scene scene;
 	Pane root;
+	InterfaceKitPhidget phidget;
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 	@Override
 	public void start(Stage stage) {
 		root = new Pane();
 		spaceship = new SpaceShip();
+		
 		root.getChildren().add(spaceship.shipPolygon);
 		scene = new Scene(root, 800, 600);
 
@@ -38,17 +48,17 @@ public class Axteroids extends Application
 	}
 
 	private void registerEvents() {
-		scene.setOnKeyPressed(ke -> {
-			processKeyPress(ke, true);
-		});
+		try {
+			phidget = new InterfaceKitPhidget();
+			phidget.addAttachListener(this);
+			phidget.addDetachListener(this);
+			phidget.addSensorChangeListener(this);
+			phidget.addInputChangeListener(this);
+			phidget.open(IK_SERIAL);
 
-		scene.setOnKeyReleased(ke -> {
-			processKeyPress(ke, false);
-		});
-	}
-
-	public static void main(String[] args) {
-		launch(args);
+		} catch (PhidgetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void loop() {
@@ -76,12 +86,22 @@ public class Axteroids extends Application
 
 	@Override
 	public void sensorChanged(SensorChangeEvent se) {
-		System.out.println("Sensor changed!");
+		//System.out.println("Sensor changed!");
+
+		switch (se.getIndex()) {
+		case X_INDEX:
+			spaceship.turn = se.getValue() - 500;
+			break;
+
+		case Y_INDEX:
+			spaceship.acceleration = se.getValue() - 500;
+			break;
+		}
 	}
 
 	@Override
 	public void inputChanged(InputChangeEvent ie) {
-		System.out.println("Input changed!");
+		//System.out.println("Input changed!");
 	}
 
 	@Override

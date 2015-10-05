@@ -4,11 +4,13 @@ import javafx.scene.shape.Polygon;
 class SpaceShip {
 
 	final static double SHIP_WIDTH = 10, SHIP_LENGTH = 15, LINE_WIDTH_EXTERNAL = 2;
+	final static double JOYSTICK_DAMPING = 3000d;
 
 	private double posX = 0, posY = 0, speedX = 0, speedY = 0, direction = 0;
 	Polygon shipPolygon;
 	public Color color;
 
+	public int acceleration, turn;
 	public boolean isAccelerating, isDecelerating, isTurningLeft, isTurningRight;
 
 	public SpaceShip() {
@@ -18,6 +20,7 @@ class SpaceShip {
 		shipPolygon.setStroke(Color.BLACK);
 		shipPolygon.setFill(color);
 		shipPolygon.setStrokeWidth(LINE_WIDTH_EXTERNAL);
+		center();
 	}
 
 	public void updatePosition(double sizeSceneX, double sizeSceneY) {
@@ -51,18 +54,14 @@ class SpaceShip {
 	}
 
 	public void updateVelocity() {
-		if (isAccelerating) {
-			increaseSpeed(0.1);
-		}
-		if (isDecelerating) {
-			increaseSpeed(-0.1);
-		}
-		if (isTurningLeft) {
-			turn(0.1);
-		}
-		if (isTurningRight) {
-			turn(-0.1);
-		}
+		increaseSpeed(acceleration / JOYSTICK_DAMPING);
+		turn(turn / JOYSTICK_DAMPING);
+	}
+	
+	public void center()
+	{
+		posX = 400;
+		posY = 300;
 	}
 
 	public double getDirection() {
