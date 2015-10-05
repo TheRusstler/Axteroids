@@ -1,7 +1,10 @@
 package uk.ac.stand.cs.cs5041.axteroids;
+import java.util.ArrayList;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -11,6 +14,9 @@ public class Axteroids extends Application {
 	Scene scene;
 	Pane root;
 	Controller controller;
+	AnimationTimer timer;
+	
+	ArrayList<Rock> rocks = new ArrayList<Rock>();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -30,6 +36,17 @@ public class Axteroids extends Application {
 
 		startTimer();
 		controller = new Controller(ship);
+		
+		scene.setOnKeyPressed(ke -> {
+			processKeyPress(ke, true);
+		});
+	}
+	
+	public void processKeyPress(KeyEvent ke, boolean isPressed) {
+		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
+		rocks.add(newRock);
+		root.getChildren().add(newRock.circle);
+		System.out.println("Spawned rock! Count: " + rocks.size());
 	}
 
 	private void startTimer() {
@@ -43,5 +60,10 @@ public class Axteroids extends Application {
 	public void loop() {
 		ship.updateVelocity();
 		ship.updatePosition(scene.getWidth(), scene.getHeight());
+		
+		for(Rock r : rocks)
+		{
+			r.update();
+		}
 	}
 }
