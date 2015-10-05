@@ -8,19 +8,19 @@ class SpaceShip {
 	final static double JOYSTICK_DAMPING = 3000d;
 
 	private double posX = 0, posY = 0, speedX = 0, speedY = 0, direction = 0;
-	Polygon shipPolygon;
+	Polygon polygon;
 	public Color color;
 
 	public int acceleration, turn;
 	public boolean isAccelerating, isDecelerating, isTurningLeft, isTurningRight;
 
 	public SpaceShip() {
-		shipPolygon = new Polygon();
-		shipPolygon.getPoints().addAll(new Double[] { -SHIP_WIDTH / 2, 0.0, +SHIP_WIDTH / 2, 0.0, 0.0, SHIP_LENGTH });
+		polygon = new Polygon();
+		polygon.getPoints().addAll(new Double[] { -SHIP_WIDTH / 2, 0.0, +SHIP_WIDTH / 2, 0.0, 0.0, SHIP_LENGTH });
 		color = Color.RED;
-		shipPolygon.setStroke(Color.BLACK);
-		shipPolygon.setFill(color);
-		shipPolygon.setStrokeWidth(LINE_WIDTH_EXTERNAL);
+		polygon.setStroke(Color.BLACK);
+		polygon.setFill(color);
+		polygon.setStrokeWidth(LINE_WIDTH_EXTERNAL);
 		center();
 	}
 
@@ -47,11 +47,11 @@ class SpaceShip {
 			direction = Math.PI * 2;
 		}
 
-		shipPolygon.setRotate(-90 - direction * 180 / Math.PI); // setRotate
+		polygon.setRotate(-90 - direction * 180 / Math.PI); // setRotate
 																// works in
 																// degrees
-		shipPolygon.setTranslateX(posX);
-		shipPolygon.setTranslateY(posY);
+		polygon.setTranslateX(posX);
+		polygon.setTranslateY(posY);
 	}
 
 	public void updateVelocity() {
