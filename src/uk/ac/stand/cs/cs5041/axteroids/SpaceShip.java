@@ -12,7 +12,7 @@ class SpaceShip {
 	Polygon polygon;
 	int acceleration, turn;
 	
-	private Point2D position, velocity = new Point2D(0, 0);
+	private Point2D position, velocity;
 	private double direction = 0;
 
 	public SpaceShip() {
@@ -23,6 +23,7 @@ class SpaceShip {
 		polygon.setFill(color);
 		polygon.setStrokeWidth(LINE_WIDTH_EXTERNAL);
 		center();
+		stop();
 	}
 
 	public void updatePosition(double sizeSceneX, double sizeSceneY) {
