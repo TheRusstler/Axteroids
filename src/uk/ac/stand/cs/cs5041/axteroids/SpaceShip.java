@@ -19,7 +19,7 @@ class SpaceShip {
 		polygon = new Polygon();
 		polygon.getPoints().addAll(new Double[] { -SHIP_WIDTH / 2, 0.0, +SHIP_WIDTH / 2, 0.0, 0.0, SHIP_LENGTH });
 		color = Color.RED;
-		polygon.setStroke(Color.BLACK);
+		polygon.setStroke(Color.WHITE);
 		polygon.setFill(color);
 		polygon.setStrokeWidth(LINE_WIDTH_EXTERNAL);
 		center();

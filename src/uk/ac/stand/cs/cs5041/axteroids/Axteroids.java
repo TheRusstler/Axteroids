@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Axteroids extends Application {
@@ -29,6 +30,7 @@ public class Axteroids extends Application {
 
 		root.getChildren().add(ship.polygon);
 		scene = new Scene(root, 800, 600);
+		scene.setFill(Color.BLACK);
 
 		stage.setTitle("Axteroids");
 		stage.setScene(scene);
@@ -46,7 +48,7 @@ public class Axteroids extends Application {
 		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
 		rocks.add(newRock);
 		root.getChildren().add(newRock.circle);
-		System.out.println("Spawned rock! Count: " + rocks.size());
+		System.out.println("new rock. count: " + rocks.size());
 	}
 
 	private void startTimer() {
@@ -63,7 +65,7 @@ public class Axteroids extends Application {
 		
 		for(Rock r : rocks)
 		{
-			r.update();
+			r.update(scene.getWidth(), scene.getHeight());
 		}
 	}
 }
