@@ -73,6 +73,7 @@ public class Axteroids extends Application {
 		ship.updatePosition(scene.getWidth(), scene.getHeight());
 		updateMissiles();
 		update();
+		controller.update();
 	}
 
 	void fireMissile() {

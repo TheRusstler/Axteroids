@@ -1,25 +1,26 @@
 package uk.ac.stand.cs.cs5041.axteroids;
 
+import com.phidgets.AdvancedServoPhidget;
 import com.phidgets.InterfaceKitPhidget;
 import com.phidgets.PhidgetException;
 import com.phidgets.event.*;
 
-public class Controller  implements InputChangeListener, SensorChangeListener {
-	
-	static final int IK_SERIAL = 274071;
+public class Controller implements AttachListener, InputChangeListener, SensorChangeListener {
+
+	static final int IK_SERIAL = 274071, SERVO_SERIAL = 306019;
 	static final int JOYSTICK_BUTTON_INDEX = 0;
 	static final int X_INDEX = 0, Y_INDEX = 1, ROTATION_INDEX = 2;
-	
+
+	AdvancedServoPhidget servo;
 	InterfaceKitPhidget phidget;
 	SpaceShip ship;
 	private int difficulty = 0;
-	
-	public Controller(SpaceShip ship)
-	{
+
+	public Controller(SpaceShip ship) {
 		this.ship = ship;
 		registerEvents();
 	}
-	
+
 	private void registerEvents() {
 		try {
 			phidget = new InterfaceKitPhidget();
@@ -30,8 +31,34 @@ public class Controller  implements InputChangeListener, SensorChangeListener {
 		} catch (PhidgetException e) {
 			e.printStackTrace();
 		}
+
+		try {
+			servo = new AdvancedServoPhidget();
+			servo.open(SERVO_SERIAL);
+			servo.addAttachListener(this);
+
+		} catch (PhidgetException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
+	void update() {
+		int turn = (int)ship.velocity.magnitude() * 50;
+		
+		if(turn > 300)
+			turn = 300;
+		
+		try {
+			if(servo.isAttached())
+			{
+				servo.setPosition(0, turn);
+			}
+			
+		} catch (PhidgetException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void sensorChanged(SensorChangeEvent se) {
 		switch (se.getIndex()) {
@@ -47,6 +74,7 @@ public class Controller  implements InputChangeListener, SensorChangeListener {
 				ship.acceleration = se.getValue() - 500;
 			else
 				ship.acceleration = 0;
+		
 			break;
 		case ROTATION_INDEX:
 			difficulty = se.getValue();
@@ -69,5 +97,15 @@ public class Controller  implements InputChangeListener, SensorChangeListener {
 
 	public int getDifficulty() {
 		return difficulty;
+	}
+
+	@Override
+	public void attached(AttachEvent e) {
+		try {
+			System.out.println("Servo attached!");
+			servo.setEngaged(0, true);
+		} catch (PhidgetException e1) {
+			e1.printStackTrace();
+		}
 	}
 }
