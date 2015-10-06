@@ -12,7 +12,8 @@ class SpaceShip {
 	Polygon polygon;
 	int acceleration, turn;
 	
-	private Point2D position, velocity;
+	Point2D position;
+	private Point2D velocity;
 	private double direction = 0;
 
 	public SpaceShip() {

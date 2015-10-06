@@ -24,6 +24,11 @@ public class Rock {
 		circle.setTranslateY(position.getY());
 		jumpBounderies(sizeSceneX, sizeSceneY);
 	}
+	
+	public boolean isHit(Point2D ship, int radius)
+	{
+		return ship.distance(position) < (radius + this.radius);
+	}
 
 	private void jumpBounderies(double sizeSceneX, double sizeSceneY) {
 		if (position.getX() - radius > sizeSceneX) {

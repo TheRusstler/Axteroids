@@ -62,10 +62,39 @@ public class Axteroids extends Application {
 	public void loop() {
 		ship.updateVelocity();
 		ship.updatePosition(scene.getWidth(), scene.getHeight());
+		updateRocks();
+	}
+	
+	void updateRocks()
+	{
+		ArrayList<Rock> destroyed = new ArrayList<Rock>();
 		
 		for(Rock r : rocks)
 		{
 			r.update(scene.getWidth(), scene.getHeight());
+			if(r.isHit(ship.position, 20))
+			{
+				shipHit();
+				return;
+			}
+		}
+		
+		removeRocks(destroyed);
+	}
+	
+	@SuppressWarnings("unchecked")
+	void shipHit()
+	{
+		removeRocks((ArrayList<Rock>)rocks.clone());
+	}
+	
+	void removeRocks(ArrayList<Rock> destroyed)
+	{
+		rocks.removeAll(destroyed);
+		
+		for(Rock r : destroyed)
+		{
+			root.getChildren().remove(r.circle);
 		}
 	}
 }
