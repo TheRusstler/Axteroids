@@ -82,7 +82,7 @@ public class Axteroids extends Application {
 		Point2D pos, vel;
 		
 		pos = new Point2D(ship.position.getX(), ship.position.getY()+SpaceShip.SHIP_LENGTH/2);
-		vel = new Point2D(Math.cos(ship.direction), -1 * Math.sin(ship.direction)).multiply(2);
+		vel = new Point2D(Math.cos(ship.direction), -1 * Math.sin(ship.direction)).multiply(4);
 		m = new Missile(pos, vel);
 		
 		missiles.add(m);
