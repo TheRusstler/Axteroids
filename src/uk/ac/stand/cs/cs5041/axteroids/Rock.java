@@ -10,12 +10,13 @@ public class Rock {
 
 	Point2D position, velocity;
 	Circle circle;
-	final int radius = 10;
+	int radius;
 
-	public Rock(Point2D position, Point2D velocity) {
+	public Rock(Point2D position, Point2D velocity, int radius, Color color) {
 		this.position = position;
 		this.velocity = velocity;
-		circle = new Circle(radius * 2, Color.WHITE);
+		this.radius = radius;
+		circle = new Circle(radius, color);
 	}
 
 	public void update(double sizeSceneX, double sizeSceneY) {
@@ -25,9 +26,9 @@ public class Rock {
 		jumpBounderies(sizeSceneX, sizeSceneY);
 	}
 	
-	public boolean isHit(Point2D ship, int radius)
+	public boolean isHit(Point2D point, int rad)
 	{
-		return ship.distance(position) < (radius + this.radius);
+		return point.distance(this.position) < (rad + this.radius);
 	}
 
 	private void jumpBounderies(double sizeSceneX, double sizeSceneY) {
@@ -51,7 +52,7 @@ public class Rock {
 		pos = randomSpawnPosition(sizeSceneX, sizeSceneY);
 		vel = randomVelocity(pos, sizeSceneX, sizeSceneY);
 
-		return new Rock(pos, vel);
+		return new Rock(pos, vel, 10 + rand.nextInt(10), Color.WHITE);
 	}
 
 	private static Point2D randomSpawnPosition(double sizeSceneX, double sizeSceneY) {

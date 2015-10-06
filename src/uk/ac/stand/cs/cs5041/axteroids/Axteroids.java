@@ -1,9 +1,11 @@
 package uk.ac.stand.cs.cs5041.axteroids;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -18,6 +20,8 @@ public class Axteroids extends Application {
 	AnimationTimer timer;
 	
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
+	ArrayList<Missile> missiles = new ArrayList<Missile>();
+	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -45,10 +49,16 @@ public class Axteroids extends Application {
 	}
 	
 	public void processKeyPress(KeyEvent ke, boolean isPressed) {
-		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
-		rocks.add(newRock);
-		root.getChildren().add(newRock.circle);
-		System.out.println("new rock. count: " + rocks.size());
+		
+		if(ke.getCode() == KeyCode.ENTER)
+		{
+			spawnRock();
+		}
+
+		if(ke.getCode() == KeyCode.SPACE)
+		{
+			fireMissile();
+		}
 	}
 
 	private void startTimer() {
@@ -62,23 +72,68 @@ public class Axteroids extends Application {
 	public void loop() {
 		ship.updateVelocity();
 		ship.updatePosition(scene.getWidth(), scene.getHeight());
-		updateRocks();
+		updateMissiles();
+		update();
 	}
 	
-	void updateRocks()
+	void fireMissile()
+	{
+		Missile m = new Missile(new Point2D(ship.position.getX(), ship.position.getY()+SpaceShip.SHIP_LENGTH/2), 
+								new Point2D(1,1));
+		missiles.add(m);
+		root.getChildren().add(m.circle);
+		System.out.println("Missile" + missiles.size());
+	}
+	
+	private void spawnRock() {
+		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
+		rocks.add(newRock);
+		root.getChildren().add(newRock.circle);
+		System.out.println("Rock" + rocks.size());
+	}
+	
+	void updateMissiles()
+	{
+		ArrayList<Missile> exploded = new ArrayList<Missile>();
+		
+		for(Missile m : missiles)
+		{
+			m.update(scene.getWidth(), scene.getHeight());
+			if(m.isExploded)
+			{
+				exploded.add(m);
+			}
+		}
+		
+		removeMissiles(exploded);
+	}
+	
+	void update()
 	{
 		ArrayList<Rock> destroyed = new ArrayList<Rock>();
+		ArrayList<Missile> missilesHit = new ArrayList<Missile>();
 		
 		for(Rock r : rocks)
 		{
 			r.update(scene.getWidth(), scene.getHeight());
-			if(r.isHit(ship.position, 20))
+			if(r.isHit(ship.position, r.radius))
 			{
 				shipHit();
 				return;
 			}
+			
+			missilesHit = new ArrayList<Missile>();
+			for(Missile m : missiles)
+			{
+				if(m.isHit(r.position, r.radius))
+				{
+					missilesHit.add(m);
+					destroyed.add(r);
+				}
+			}
 		}
 		
+		removeMissiles(missilesHit);
 		removeRocks(destroyed);
 	}
 	
@@ -95,6 +150,16 @@ public class Axteroids extends Application {
 		for(Rock r : destroyed)
 		{
 			root.getChildren().remove(r.circle);
+		}
+	}
+	
+	void removeMissiles(ArrayList<Missile> miss)
+	{
+		missiles.removeAll(miss);
+		
+		for(Missile m : miss)
+		{
+			root.getChildren().remove(m.circle);
 		}
 	}
 }
