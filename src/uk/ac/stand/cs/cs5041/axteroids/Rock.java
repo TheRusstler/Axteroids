@@ -47,12 +47,16 @@ public class Rock {
 	}
 
 	public static Rock SpawnRock(double sizeSceneX, double sizeSceneY) {
+		Rock newRock;
 		Point2D pos, vel;
 
 		pos = randomSpawnPosition(sizeSceneX, sizeSceneY);
 		vel = randomVelocity(pos, sizeSceneX, sizeSceneY);
 
-		return new Rock(pos, vel, 10 + rand.nextInt(10), Color.WHITE);
+		newRock = new Rock(pos, vel, 10 + rand.nextInt(10), Color.WHITE);
+		newRock.update(sizeSceneX, sizeSceneY);
+		
+		return newRock;
 	}
 
 	private static Point2D randomSpawnPosition(double sizeSceneX, double sizeSceneY) {

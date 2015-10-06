@@ -18,6 +18,8 @@ public class Axteroids extends Application {
 	Pane root;
 	Controller controller;
 	AnimationTimer timer;
+	int rockSpawnDelay = 100;
+	
 	
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
 	ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -119,7 +121,7 @@ public class Axteroids extends Application {
 		for(Rock r : rocks)
 		{
 			r.update(scene.getWidth(), scene.getHeight());
-			if(r.isHit(ship.position, r.radius))
+			if(r.isHit(ship.position, 8))
 			{
 				shipHit();
 				return;
@@ -138,7 +140,26 @@ public class Axteroids extends Application {
 		
 		removeMissiles(missilesHit);
 		removeRocks(destroyed);
+		
+		checkRockSpawn();
 	}
+
+	private void checkRockSpawn() {
+		if(rocks.size() < 10)
+		{
+			if(rockSpawnDelay == 0)
+			{
+				spawnRock();
+				rockSpawnDelay = 100;
+			}
+			else
+			{
+				rockSpawnDelay --;
+			}
+		}
+	}
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	void shipHit()

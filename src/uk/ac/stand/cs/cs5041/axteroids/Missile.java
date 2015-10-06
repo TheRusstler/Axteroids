@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 public class Missile extends Rock {
 
 	public boolean isExploded = false;
-	private int lifeSpan = 100;
+	private int range = 100;
 	
 	public Missile(Point2D position, Point2D velocity) {
 		super(position, velocity, 2, Color.RED);
@@ -14,9 +14,9 @@ public class Missile extends Rock {
 	
 	public void update(double sizeSceneX, double sizeSceneY) {
 		super.update(sizeSceneX, sizeSceneY);
-		lifeSpan--;
+		range--;
 		
-		if(lifeSpan < 0)
+		if(range < 0)
 		{
 			isExploded = true;
 		}
