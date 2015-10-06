@@ -78,18 +78,21 @@ public class Axteroids extends Application {
 	
 	void fireMissile()
 	{
-		Missile m = new Missile(new Point2D(ship.position.getX(), ship.position.getY()+SpaceShip.SHIP_LENGTH/2), 
-								new Point2D(1,1));
+		Missile m;
+		Point2D pos, vel;
+		
+		pos = new Point2D(ship.position.getX(), ship.position.getY()+SpaceShip.SHIP_LENGTH/2);
+		vel = new Point2D(Math.cos(ship.direction), -1 * Math.sin(ship.direction)).multiply(2);
+		m = new Missile(pos, vel);
+		
 		missiles.add(m);
 		root.getChildren().add(m.circle);
-		System.out.println("Missile" + missiles.size());
 	}
 	
 	private void spawnRock() {
 		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
 		rocks.add(newRock);
 		root.getChildren().add(newRock.circle);
-		System.out.println("Rock" + rocks.size());
 	}
 	
 	void updateMissiles()
