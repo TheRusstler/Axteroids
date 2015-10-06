@@ -6,11 +6,13 @@ import com.phidgets.event.*;
 
 public class Controller  implements InputChangeListener, SensorChangeListener {
 	
-	static final int IK_SERIAL = 274071, ROTATION_SENSOR_INDEX = 0;
-	static final int X_INDEX = 0, Y_INDEX = 1;
+	static final int IK_SERIAL = 274071;
+	static final int JOYSTICK_BUTTON_INDEX = 0;
+	static final int X_INDEX = 0, Y_INDEX = 1, ROTATION_INDEX = 2;
 	
 	InterfaceKitPhidget phidget;
 	SpaceShip ship;
+	private int difficulty = 0;
 	
 	public Controller(SpaceShip ship)
 	{
@@ -46,6 +48,9 @@ public class Controller  implements InputChangeListener, SensorChangeListener {
 			else
 				ship.acceleration = 0;
 			break;
+		case ROTATION_INDEX:
+			difficulty = se.getValue();
+			System.out.println("DIFF: " + difficulty);
 		}
 	}
 
@@ -55,10 +60,14 @@ public class Controller  implements InputChangeListener, SensorChangeListener {
 
 	@Override
 	public void inputChanged(InputChangeEvent ie) {
-		if (ie.getIndex() == ROTATION_SENSOR_INDEX) {
+		if (ie.getIndex() == JOYSTICK_BUTTON_INDEX) {
 			if (ie.getState() == true) {
 				ship.stop();
 			}
 		}
+	}
+
+	public int getDifficulty() {
+		return difficulty;
 	}
 }

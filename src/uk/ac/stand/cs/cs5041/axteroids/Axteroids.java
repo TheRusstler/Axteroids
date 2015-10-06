@@ -19,11 +19,10 @@ public class Axteroids extends Application {
 	Controller controller;
 	AnimationTimer timer;
 	int rockSpawnDelay = 100;
-	
-	
+	int difficulty = 0; // 0-1000
+
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
 	ArrayList<Missile> missiles = new ArrayList<Missile>();
-	
 
 	public static void main(String[] args) {
 		launch(args);
@@ -44,21 +43,19 @@ public class Axteroids extends Application {
 
 		startTimer();
 		controller = new Controller(ship);
-		
+
 		scene.setOnKeyPressed(ke -> {
 			processKeyPress(ke, true);
 		});
 	}
-	
+
 	public void processKeyPress(KeyEvent ke, boolean isPressed) {
-		
-		if(ke.getCode() == KeyCode.ENTER)
-		{
+
+		if (ke.getCode() == KeyCode.ENTER) {
 			spawnRock();
 		}
 
-		if(ke.getCode() == KeyCode.SPACE)
-		{
+		if (ke.getCode() == KeyCode.SPACE) {
 			fireMissile();
 		}
 	}
@@ -77,112 +74,94 @@ public class Axteroids extends Application {
 		updateMissiles();
 		update();
 	}
-	
-	void fireMissile()
-	{
+
+	void fireMissile() {
 		Missile m;
 		Point2D pos, vel;
-		
-		pos = new Point2D(ship.position.getX(), ship.position.getY()+SpaceShip.SHIP_LENGTH/2);
+
+		pos = new Point2D(ship.position.getX(), ship.position.getY() + SpaceShip.SHIP_LENGTH / 2);
 		vel = new Point2D(Math.cos(ship.direction), -1 * Math.sin(ship.direction)).multiply(4);
 		m = new Missile(pos, vel);
-		
+
 		missiles.add(m);
 		root.getChildren().add(m.circle);
 	}
-	
+
 	private void spawnRock() {
 		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
 		rocks.add(newRock);
 		root.getChildren().add(newRock.circle);
 	}
-	
-	void updateMissiles()
-	{
+
+	void updateMissiles() {
 		ArrayList<Missile> exploded = new ArrayList<Missile>();
-		
-		for(Missile m : missiles)
-		{
+
+		for (Missile m : missiles) {
 			m.update(scene.getWidth(), scene.getHeight());
-			if(m.isExploded)
-			{
+			if (m.isExploded) {
 				exploded.add(m);
 			}
 		}
-		
+
 		removeMissiles(exploded);
 	}
-	
-	void update()
-	{
+
+	void update() {
 		ArrayList<Rock> destroyed = new ArrayList<Rock>();
 		ArrayList<Missile> missilesHit = new ArrayList<Missile>();
-		
-		for(Rock r : rocks)
-		{
+
+		for (Rock r : rocks) {
 			r.update(scene.getWidth(), scene.getHeight());
-			if(r.isHit(ship.position, 8))
-			{
+			if (r.isHit(ship.position, 8)) {
 				shipHit();
 				return;
 			}
-			
+
 			missilesHit = new ArrayList<Missile>();
-			for(Missile m : missiles)
-			{
-				if(m.isHit(r.position, r.radius))
-				{
+			for (Missile m : missiles) {
+				if (m.isHit(r.position, r.radius)) {
 					missilesHit.add(m);
 					destroyed.add(r);
 				}
 			}
 		}
-		
+
 		removeMissiles(missilesHit);
 		removeRocks(destroyed);
-		
+
 		checkRockSpawn();
 	}
 
 	private void checkRockSpawn() {
-		if(rocks.size() < 10)
-		{
-			if(rockSpawnDelay == 0)
-			{
-				spawnRock();
-				rockSpawnDelay = 100;
-			}
-			else
-			{
-				rockSpawnDelay --;
-			}
+		if (rockSpawnDelay < 0) {
+			spawnRock();
+			rockSpawnDelay = controller.getDifficulty() / 5;
 		}
+
+		if (rockSpawnDelay > controller.getDifficulty()) {
+			rockSpawnDelay = controller.getDifficulty() / 5;
+		}
+
+		rockSpawnDelay--;
 	}
-	
-	
-	
+
 	@SuppressWarnings("unchecked")
-	void shipHit()
-	{
-		removeRocks((ArrayList<Rock>)rocks.clone());
+	void shipHit() {
+		removeRocks((ArrayList<Rock>) rocks.clone());
 	}
-	
-	void removeRocks(ArrayList<Rock> destroyed)
-	{
+
+	void removeRocks(ArrayList<Rock> destroyed) {
 		rocks.removeAll(destroyed);
-		
-		for(Rock r : destroyed)
-		{
+
+		for (Rock r : destroyed) {
 			root.getChildren().remove(r.circle);
 		}
 	}
-	
-	void removeMissiles(ArrayList<Missile> miss)
-	{
+
+	void removeMissiles(ArrayList<Missile> miss) {
 		missiles.removeAll(miss);
-		
-		for(Missile m : miss)
-		{
+
+		for (Missile m : miss) {
 			root.getChildren().remove(m.circle);
 		}
 	}
