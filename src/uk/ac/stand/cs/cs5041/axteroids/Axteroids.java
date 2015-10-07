@@ -172,16 +172,22 @@ public class Axteroids extends Application {
 	}
 
 	private void checkRockSpawn() {
+		int diff = difficulty();
 		if (rockSpawnDelay < 0) {
 			spawnRock();
-			rockSpawnDelay = controller.getDifficulty() / 5;
+			rockSpawnDelay = diff;
 		}
 
-		if (rockSpawnDelay > controller.getDifficulty()) {
-			rockSpawnDelay = controller.getDifficulty() / 5;
+		if (rockSpawnDelay > diff) {
+			rockSpawnDelay = diff;
 		}
 
 		rockSpawnDelay--;
+	}
+	
+	int difficulty()
+	{
+		return (int) ((controller.getDifficulty())/50);
 	}
 
 	@SuppressWarnings("unchecked")

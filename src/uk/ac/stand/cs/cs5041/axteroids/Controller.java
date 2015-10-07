@@ -20,7 +20,7 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	private int difficulty = 0;
 	private long lastSoundBomb = 0;
 	
-	Runnable soundBomb;
+	private Runnable soundBomb;
 
 	public Controller(SpaceShip ship, Runnable soundBomb) {
 		this.ship = ship;
