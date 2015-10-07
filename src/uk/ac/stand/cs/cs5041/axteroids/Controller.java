@@ -5,6 +5,9 @@ import com.phidgets.InterfaceKitPhidget;
 import com.phidgets.PhidgetException;
 import com.phidgets.event.*;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 public class Controller implements AttachListener, InputChangeListener, SensorChangeListener {
 
 	static final int IK_SERIAL = 274071, SERVO_SERIAL = 306019;
@@ -12,22 +15,38 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	static final int X_INDEX = 0, Y_INDEX = 1;
 	static final int ROTATION_INDEX = 2;
 	static final int SOUND_INDEX = 3;
+	static final int LIGHT_INDEX = 4;
 	
-	public boolean soundBombReady = false;
+	static final int SOUND_BOMB_RESPAWN = 5000;
 
 	private AdvancedServoPhidget servo;
 	private InterfaceKitPhidget phidget;
 	private SpaceShip ship;
-	
+
 	private int difficulty = 0;
 	private long lastSoundBomb = 0;
-	
+
 	private Runnable soundBomb;
 
 	public Controller(SpaceShip ship, Runnable soundBomb) {
 		this.ship = ship;
 		this.soundBomb = soundBomb;
 		registerEvents();
+	}
+
+	// Bindings
+	public SimpleBooleanProperty isSoundBombReady = new SimpleBooleanProperty();
+
+	public final boolean getIsSoundBombReady() {
+		return isSoundBombReady.get();
+	}
+
+	public final void setIsSoundBombReady(boolean value) {
+		isSoundBombReady.set(value);
+	}
+
+	public BooleanProperty isSoundBombReadyProperty() {
+		return isSoundBombReady;
 	}
 
 	private void registerEvents() {
@@ -52,19 +71,20 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	}
 
 	void update() {
-		int turn = (int)ship.velocity.magnitude() * 50;
-		
-		if(turn > 300)
-			turn = 300;
-		
+
 		try {
-			if(servo.isAttached())
-			{
+			if (servo.isAttached()) {
+				int turn = (int) ship.velocity.magnitude() * 20;
+				int max = (int) servo.getPositionMax(0);
+
+				if (turn > max)
+					turn = max;
+
 				servo.setPosition(0, turn);
 			}
-			
-		} catch (PhidgetException e) {
-			e.printStackTrace();
+
+		} catch (PhidgetException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -84,28 +104,29 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 			else
 				ship.acceleration = 0;
 			break;
-			
+
 		case ROTATION_INDEX:
 			difficulty = se.getValue();
 			break;
-			
+
 		case SOUND_INDEX:
-			soundBombReady = isSoundBombReady();
-			if(se.getValue() > 100 && soundBombReady)
-			{
+			setIsSoundBombReady(isSoundBombReady());
+			if (se.getValue() > 100 && getIsSoundBombReady()) {
 				soundBomb.run();
 				lastSoundBomb = System.nanoTime();
 			}
 			break;
+			
+		case LIGHT_INDEX:
+			break;
 		}
 	}
 
-	boolean isSoundBombReady()
-	{
-		double difference = (System.nanoTime() - lastSoundBomb)/1e6;
-		return difference > 3000;
+	boolean isSoundBombReady() {
+		double difference = (System.nanoTime() - lastSoundBomb) / 1e6;
+		return difference > SOUND_BOMB_RESPAWN;
 	}
-	
+
 	boolean isSensorNearCentre(SensorChangeEvent se) {
 		return se.getValue() > 400 && se.getValue() < 600;
 	}

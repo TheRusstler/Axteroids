@@ -11,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -54,10 +53,21 @@ public class Axteroids extends Application {
 		startTimer();
 		controller = new Controller(ship, () -> soundBomb());
 
-		scene.setOnKeyPressed(ke -> firing = true);
-		scene.setOnKeyReleased(ke -> firing = false);
+		scene.setOnKeyPressed(ke -> { if(ke.getCode() == KeyCode.SPACE) firing = true; });
+		scene.setOnKeyReleased(ke -> { if(ke.getCode() == KeyCode.SPACE) firing = false; });
 
 		textNotification("BEGIN", Color.GREEN);
+		soundBombReadyLabel();
+	}
+	
+	void soundBombReadyLabel()
+	{
+		Label l = new Label("SOUND BOMB READY!");
+		l.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
+		l.setPadding(new Insets(10, 0, 0, 10));
+		l.setTextFill(Color.DARKVIOLET);
+		l.visibleProperty().bind(controller.isSoundBombReady);
+		root.setTop(l);
 	}
 
 	private void startTimer() {
