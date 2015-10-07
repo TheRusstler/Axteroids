@@ -49,11 +49,14 @@ public class Rock {
 	public static Rock SpawnRock(double sizeSceneX, double sizeSceneY) {
 		Rock newRock;
 		Point2D pos, vel;
+		Color color;
+		
+		color = Color.rgb(100 + rand.nextInt(100), 100 + rand.nextInt(100), 255);
 
 		pos = randomSpawnPosition(sizeSceneX, sizeSceneY);
 		vel = randomVelocity(pos, sizeSceneX, sizeSceneY);
 
-		newRock = new Rock(pos, vel, 10 + rand.nextInt(10), Color.WHITE);
+		newRock = new Rock(pos, vel, 5 + rand.nextInt(3), color);
 		newRock.update(sizeSceneX, sizeSceneY);
 		
 		return newRock;

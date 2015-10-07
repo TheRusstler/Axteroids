@@ -28,6 +28,7 @@ public class Axteroids extends Application {
 	AnimationTimer timer;
 	int rockSpawnDelay = 100;
 	int difficulty = 0, score = 0;
+	boolean firing = false;
 
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
 	ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -53,22 +54,10 @@ public class Axteroids extends Application {
 		startTimer();
 		controller = new Controller(ship, () -> soundBomb());
 
-		scene.setOnKeyPressed(ke -> {
-			processKeyPress(ke, true);
-		});
+		scene.setOnKeyPressed(ke -> firing = true);
+		scene.setOnKeyReleased(ke -> firing = false);
 
 		textNotification("BEGIN", Color.GREEN);
-	}
-
-	public void processKeyPress(KeyEvent ke, boolean isPressed) {
-
-		if (ke.getCode() == KeyCode.ENTER) {
-			spawnRock();
-		}
-
-		if (ke.getCode() == KeyCode.SPACE) {
-			fireMissile();
-		}
 	}
 
 	private void startTimer() {
@@ -85,6 +74,11 @@ public class Axteroids extends Application {
 		updateMissiles();
 		update();
 		controller.update();
+		
+		if(firing)
+		{
+			fireMissile();
+		}
 	}
 
 	void soundBomb() {

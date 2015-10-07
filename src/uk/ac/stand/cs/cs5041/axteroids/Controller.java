@@ -12,6 +12,8 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	static final int X_INDEX = 0, Y_INDEX = 1;
 	static final int ROTATION_INDEX = 2;
 	static final int SOUND_INDEX = 3;
+	
+	public boolean soundBombReady = false;
 
 	private AdvancedServoPhidget servo;
 	private InterfaceKitPhidget phidget;
@@ -88,7 +90,8 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 			break;
 			
 		case SOUND_INDEX:
-			if(se.getValue() > 100 && isSoundBombReady())
+			soundBombReady = isSoundBombReady();
+			if(se.getValue() > 100 && soundBombReady)
 			{
 				soundBomb.run();
 				lastSoundBomb = System.nanoTime();
@@ -100,7 +103,7 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	boolean isSoundBombReady()
 	{
 		double difference = (System.nanoTime() - lastSoundBomb)/1e6;
-		return difference > 200;
+		return difference > 3000;
 	}
 	
 	boolean isSensorNearCentre(SensorChangeEvent se) {
