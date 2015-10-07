@@ -15,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -26,7 +27,7 @@ public class Axteroids extends Application {
 	Controller controller;
 	AnimationTimer timer;
 	int rockSpawnDelay = 100;
-	int difficulty = 0;
+	int difficulty = 0, score = 0;
 
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
 	ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -93,7 +94,7 @@ public class Axteroids extends Application {
 
 	void textNotification(String text, Color colour) {
 		Label l = new Label(text);
-		l.setFont(Font.font(50));
+		l.setFont(Font.font("Arial", FontWeight.MEDIUM, 60));
 		l.setOpacity(0);
 		l.setAlignment(Pos.CENTER);
 		l.setPadding(new Insets(0, 0, 200, 0));
@@ -166,6 +167,7 @@ public class Axteroids extends Application {
 			r.update(scene.getWidth(), scene.getHeight());
 			if (r.isHit(ship.position, 8)) {
 				shipHit();
+				score = 0;
 				return;
 			}
 
@@ -174,11 +176,11 @@ public class Axteroids extends Application {
 				if (m.isHit(r.position, r.radius)) {
 					missilesHit.add(m);
 					destroyed.add(r);
+					score++;
 				}
 			}
+			removeMissiles(missilesHit);
 		}
-
-		removeMissiles(missilesHit);
 		removeRocks(destroyed);
 
 		checkRockSpawn();
@@ -208,18 +210,16 @@ public class Axteroids extends Application {
 	}
 
 	void removeRocks(ArrayList<Rock> destroyed) {
-		rocks.removeAll(destroyed);
-
 		for (Rock r : destroyed) {
 			root.getChildren().remove(r.circle);
 		}
+		rocks.removeAll(destroyed);
 	}
 
 	void removeMissiles(ArrayList<Missile> miss) {
-		missiles.removeAll(miss);
-
 		for (Missile m : miss) {
 			root.getChildren().remove(m.circle);
 		}
+		missiles.removeAll(miss);
 	}
 }
