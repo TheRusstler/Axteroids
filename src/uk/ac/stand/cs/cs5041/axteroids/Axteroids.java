@@ -19,7 +19,6 @@ import javafx.util.Duration;
 
 public class Axteroids extends Application {
 
-	Label soundBombLabel;
 	SpaceShip ship;
 	Scene scene;
 	BorderPane root;
@@ -41,9 +40,6 @@ public class Axteroids extends Application {
 		ship = new SpaceShip();
 
 		root.getChildren().add(ship.polygon);
-		soundBombLabel = addNotificationLabel("SOUND BOMB!", Color.BLUEVIOLET);
-
-		root.setCenter(soundBombLabel);
 		root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 
 		scene = new Scene(root, 800, 600);
@@ -58,17 +54,8 @@ public class Axteroids extends Application {
 		scene.setOnKeyPressed(ke -> {
 			processKeyPress(ke, true);
 		});
-	}
-	
-	Label addNotificationLabel(String text, Color colour)
-	{
-		Label l = new Label(text);
-		l.setFont(Font.font(50));
-		l.setOpacity(0);
-		l.setAlignment(Pos.CENTER);
-		l.setTextFill(colour);
-		root.setCenter(l);
-		return l;
+
+		textNotification("BEGIN", Color.GREEN);
 	}
 
 	public void processKeyPress(KeyEvent ke, boolean isPressed) {
@@ -99,27 +86,35 @@ public class Axteroids extends Application {
 	}
 
 	void soundBomb() {
-		textNotification(soundBombLabel);
+		textNotification("SOUND BOMB!", Color.BLUEVIOLET);
 		Platform.runLater(() -> clearAllRocks());
 	}
-	
-	void textNotification(Label l)
-	{
+
+	void textNotification(String text, Color colour) {
+		Label l = new Label(text);
+		l.setFont(Font.font(50));
+		l.setOpacity(0);
+		l.setAlignment(Pos.CENTER);
+		l.setTextFill(colour);
+
 		FadeTransition in = new FadeTransition(Duration.millis(300), l);
 		in.setFromValue(0.0);
 		in.setToValue(1.0);
-		
+
 		FadeTransition out = new FadeTransition(Duration.millis(1000), l);
 		out.setFromValue(1.0);
 		out.setToValue(0);
-		
+
 		in.setOnFinished(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent event) {
-		    	Platform.runLater(() -> out.play());
-		    }
+			public void handle(ActionEvent event) {
+				Platform.runLater(() -> out.play());
+			}
 		});
-		
-		Platform.runLater(() -> in.play());
+
+		Platform.runLater(() -> {
+			root.setCenter(l);
+			in.play();
+		});
 	}
 
 	void fireMissile() {
@@ -132,6 +127,12 @@ public class Axteroids extends Application {
 
 		missiles.add(m);
 		root.getChildren().add(m.circle);
+	}
+	
+	void shipHit()
+	{
+		clearAllRocks();
+		textNotification("FAIL", Color.RED);
 	}
 
 	private void spawnRock() {
@@ -160,7 +161,7 @@ public class Axteroids extends Application {
 		for (Rock r : rocks) {
 			r.update(scene.getWidth(), scene.getHeight());
 			if (r.isHit(ship.position, 8)) {
-				clearAllRocks();
+				shipHit();
 				return;
 			}
 
@@ -192,10 +193,9 @@ public class Axteroids extends Application {
 
 		rockSpawnDelay--;
 	}
-	
-	int difficulty()
-	{
-		return (int) ((controller.getDifficulty())/50);
+
+	int difficulty() {
+		return (int) ((controller.getDifficulty()) / 50);
 	}
 
 	@SuppressWarnings("unchecked")
