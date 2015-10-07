@@ -3,6 +3,7 @@ package uk.ac.stand.cs.cs5041.axteroids;
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -42,7 +43,7 @@ public class Axteroids extends Application {
 		stage.show();
 
 		startTimer();
-		controller = new Controller(ship);
+		controller = new Controller(ship, () -> Platform.runLater(() -> clearAllRocks()));
 
 		scene.setOnKeyPressed(ke -> {
 			processKeyPress(ke, true);
@@ -114,7 +115,7 @@ public class Axteroids extends Application {
 		for (Rock r : rocks) {
 			r.update(scene.getWidth(), scene.getHeight());
 			if (r.isHit(ship.position, 8)) {
-				shipHit();
+				clearAllRocks();
 				return;
 			}
 
@@ -147,7 +148,7 @@ public class Axteroids extends Application {
 	}
 
 	@SuppressWarnings("unchecked")
-	void shipHit() {
+	void clearAllRocks() {
 		removeRocks((ArrayList<Rock>) rocks.clone());
 	}
 

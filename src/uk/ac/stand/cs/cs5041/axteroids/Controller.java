@@ -9,15 +9,22 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 
 	static final int IK_SERIAL = 274071, SERVO_SERIAL = 306019;
 	static final int JOYSTICK_BUTTON_INDEX = 0;
-	static final int X_INDEX = 0, Y_INDEX = 1, ROTATION_INDEX = 2;
+	static final int X_INDEX = 0, Y_INDEX = 1;
+	static final int ROTATION_INDEX = 2;
+	static final int SOUND_INDEX = 3;
 
-	AdvancedServoPhidget servo;
-	InterfaceKitPhidget phidget;
-	SpaceShip ship;
+	private AdvancedServoPhidget servo;
+	private InterfaceKitPhidget phidget;
+	private SpaceShip ship;
+	
 	private int difficulty = 0;
+	private long lastSoundBomb = 0;
+	
+	Runnable soundBomb;
 
-	public Controller(SpaceShip ship) {
+	public Controller(SpaceShip ship, Runnable soundBomb) {
 		this.ship = ship;
+		this.soundBomb = soundBomb;
 		registerEvents();
 	}
 
@@ -74,14 +81,28 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 				ship.acceleration = se.getValue() - 500;
 			else
 				ship.acceleration = 0;
-		
 			break;
+			
 		case ROTATION_INDEX:
 			difficulty = se.getValue();
-			System.out.println("DIFF: " + difficulty);
+			break;
+			
+		case SOUND_INDEX:
+			if(se.getValue() > 100 && isSoundBombReady())
+			{
+				soundBomb.run();
+				lastSoundBomb = System.nanoTime();
+			}
+			break;
 		}
 	}
 
+	boolean isSoundBombReady()
+	{
+		double difference = (System.nanoTime() - lastSoundBomb)/1e6;
+		return difference > 200;
+	}
+	
 	boolean isSensorNearCentre(SensorChangeEvent se) {
 		return se.getValue() > 400 && se.getValue() < 600;
 	}
