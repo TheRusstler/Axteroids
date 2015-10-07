@@ -3,29 +3,20 @@ package uk.ac.stand.cs.cs5041.axteroids;
 import java.util.ArrayList;
 import javafx.animation.*;
 import javafx.application.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Axteroids extends Application {
+	
+	private View view;
 
-	Label scoreLabel;
 	SpaceShip ship;
-	Scene scene;
-	BorderPane root;
 	Controller controller;
+	
 	AnimationTimer timer;
+	
 	int rockSpawnDelay = 100;
 	int difficulty = 0, score = 0;
 	boolean firing = false;
@@ -39,56 +30,34 @@ public class Axteroids extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		root = new BorderPane();
+		view = new View();
+		view.start(stage);
+
 		ship = new SpaceShip();
-
-		root.getChildren().add(ship.polygon);
-		root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-
-		scene = new Scene(root, 800, 600);
-
-		stage.setTitle("Axteroids");
-		stage.setScene(scene);
-		stage.show();
-
-		startTimer();
+		view.addSpaceShip(ship);
+		
 		controller = new Controller(ship, () -> soundBomb());
 
-		scene.setOnKeyPressed(ke -> {
+		view.getScene().setOnKeyPressed(ke -> {
 			if (ke.getCode() == KeyCode.SPACE)
 				firing = true;
 		});
-		scene.setOnKeyReleased(ke -> {
+		view.getScene().setOnKeyReleased(ke -> {
 			if (ke.getCode() == KeyCode.SPACE)
 				firing = false;
 		});
+		
+		view.setSoundBombReadyBinding(controller.isSoundBombReadyProperty());
 
-		scoreLabel();
-		textNotification("BEGIN", Color.GREEN);
-		soundBombReadyLabel();
+		view.notify("BEGIN", Color.GREEN);
+		startTimer();
 	}
 
 	public final void setScore(int value) {
 		score = value;
-		scoreLabel.setText("Score: " + score);
+		//scoreLabel.setText("Score: " + score);
 	}
 
-	void scoreLabel() {
-		scoreLabel = new Label("Score: 0");
-		scoreLabel.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
-		scoreLabel.setPadding(new Insets(20, 0, 0, 20));
-		scoreLabel.setTextFill(Color.GREEN);
-		root.setTop(scoreLabel);
-	}
-
-	void soundBombReadyLabel() {
-		Label l = new Label("SOUND BOMB READY!");
-		l.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
-		l.setPadding(new Insets(0, 0, 20, 20));
-		l.setTextFill(Color.DARKVIOLET);
-		l.visibleProperty().bind(controller.isSoundBombReady);
-		root.setBottom(l);
-	}
 
 	private void startTimer() {
 		new AnimationTimer() {
@@ -100,7 +69,7 @@ public class Axteroids extends Application {
 
 	public void loop() {
 		ship.updateVelocity();
-		ship.updatePosition(scene.getWidth(), scene.getHeight());
+		ship.updatePosition(View.WIDTH, View.HEIGHT);
 		updateMissiles();
 		update();
 		controller.update();
@@ -111,38 +80,10 @@ public class Axteroids extends Application {
 	}
 
 	void soundBomb() {
-		textNotification("SOUND BOMB!", Color.BLUEVIOLET);
+		view.notify("SOUND BOMB!", Color.BLUEVIOLET);
 		Platform.runLater(() -> {
 			clearAllRocks();
 			setScore(score + 100);
-		});
-	}
-
-	void textNotification(String text, Color colour) {
-		Label l = new Label(text);
-		l.setFont(Font.font("Arial", FontWeight.MEDIUM, 60));
-		l.setOpacity(0);
-		l.setAlignment(Pos.CENTER);
-		l.setPadding(new Insets(0, 0, 200, 0));
-		l.setTextFill(colour);
-
-		FadeTransition in = new FadeTransition(Duration.millis(300), l);
-		in.setFromValue(0.0);
-		in.setToValue(1.0);
-
-		FadeTransition out = new FadeTransition(Duration.millis(1000), l);
-		out.setFromValue(1.0);
-		out.setToValue(0);
-
-		in.setOnFinished(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				Platform.runLater(() -> out.play());
-			}
-		});
-
-		Platform.runLater(() -> {
-			root.setCenter(l);
-			in.play();
 		});
 	}
 
@@ -155,27 +96,27 @@ public class Axteroids extends Application {
 		m = new Missile(pos, vel);
 
 		missiles.add(m);
-		root.getChildren().add(m.circle);
+		view.addRock(m);
 	}
 
 	void shipHit() {
 		clearAllRocks();
 		ship.stop();
 		ship.center();
-		textNotification("FAIL", Color.RED);
+		view.notify("FAIL", Color.RED);
 	}
 
 	private void spawnRock() {
-		Rock newRock = Rock.SpawnRock(scene.getWidth(), scene.getHeight());
+		Rock newRock = Rock.SpawnRock(View.WIDTH, View.HEIGHT);
 		rocks.add(newRock);
-		root.getChildren().add(newRock.circle);
+		view.addRock(newRock);
 	}
 
 	void updateMissiles() {
 		ArrayList<Missile> exploded = new ArrayList<Missile>();
 
 		for (Missile m : missiles) {
-			m.update(scene.getWidth(), scene.getHeight());
+			m.update(View.WIDTH, View.HEIGHT);
 			if (m.isExploded) {
 				exploded.add(m);
 			}
@@ -189,7 +130,7 @@ public class Axteroids extends Application {
 		ArrayList<Missile> missilesHit = new ArrayList<Missile>();
 
 		for (Rock r : rocks) {
-			r.update(scene.getWidth(), scene.getHeight());
+			r.update(View.WIDTH, View.HEIGHT);
 			if (r.isHit(ship.position, 8)) {
 				shipHit();
 				setScore(0);
@@ -235,16 +176,12 @@ public class Axteroids extends Application {
 	}
 
 	void removeRocks(ArrayList<Rock> destroyed) {
-		for (Rock r : destroyed) {
-			root.getChildren().remove(r.circle);
-		}
+		view.removeAllRocks(destroyed);
 		rocks.removeAll(destroyed);
 	}
 
 	void removeMissiles(ArrayList<Missile> miss) {
-		for (Missile m : miss) {
-			root.getChildren().remove(m.circle);
-		}
+		view.removeAllRocks(miss);
 		missiles.removeAll(miss);
 	}
 }
