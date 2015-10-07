@@ -26,7 +26,7 @@ public class Axteroids extends Application {
 	Controller controller;
 	AnimationTimer timer;
 	int rockSpawnDelay = 100;
-	int difficulty = 0; // 0-1000
+	int difficulty = 0;
 
 	ArrayList<Rock> rocks = new ArrayList<Rock>();
 	ArrayList<Missile> missiles = new ArrayList<Missile>();
@@ -41,12 +41,7 @@ public class Axteroids extends Application {
 		ship = new SpaceShip();
 
 		root.getChildren().add(ship.polygon);
-
-		soundBombLabel = new Label("SOUND BOMB!");
-		soundBombLabel.setFont(Font.font(50));
-		soundBombLabel.setOpacity(0);
-		soundBombLabel.setAlignment(Pos.CENTER);
-		soundBombLabel.setTextFill(Color.BLUEVIOLET);
+		soundBombLabel = addNotificationLabel("SOUND BOMB!", Color.BLUEVIOLET);
 
 		root.setCenter(soundBombLabel);
 		root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
@@ -63,6 +58,17 @@ public class Axteroids extends Application {
 		scene.setOnKeyPressed(ke -> {
 			processKeyPress(ke, true);
 		});
+	}
+	
+	Label addNotificationLabel(String text, Color colour)
+	{
+		Label l = new Label(text);
+		l.setFont(Font.font(50));
+		l.setOpacity(0);
+		l.setAlignment(Pos.CENTER);
+		l.setTextFill(colour);
+		root.setCenter(l);
+		return l;
 	}
 
 	public void processKeyPress(KeyEvent ke, boolean isPressed) {
@@ -93,25 +99,27 @@ public class Axteroids extends Application {
 	}
 
 	void soundBomb() {
-		FadeTransition in = new FadeTransition(Duration.millis(300), soundBombLabel);
+		textNotification(soundBombLabel);
+		Platform.runLater(() -> clearAllRocks());
+	}
+	
+	void textNotification(Label l)
+	{
+		FadeTransition in = new FadeTransition(Duration.millis(300), l);
 		in.setFromValue(0.0);
 		in.setToValue(1.0);
 		
-		FadeTransition out = new FadeTransition(Duration.millis(1000), soundBombLabel);
+		FadeTransition out = new FadeTransition(Duration.millis(1000), l);
 		out.setFromValue(1.0);
 		out.setToValue(0);
-
+		
 		in.setOnFinished(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent event) {
 		    	Platform.runLater(() -> out.play());
 		    }
 		});
-
-		Platform.runLater(() -> 
-		{
-			clearAllRocks();
-			in.play();
-		});
+		
+		Platform.runLater(() -> in.play());
 	}
 
 	void fireMissile() {
