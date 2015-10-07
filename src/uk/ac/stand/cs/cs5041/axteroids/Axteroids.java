@@ -5,6 +5,7 @@ import javafx.animation.*;
 import javafx.application.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -95,6 +96,7 @@ public class Axteroids extends Application {
 		l.setFont(Font.font(50));
 		l.setOpacity(0);
 		l.setAlignment(Pos.CENTER);
+		l.setPadding(new Insets(0, 0, 200, 0));
 		l.setTextFill(colour);
 
 		FadeTransition in = new FadeTransition(Duration.millis(300), l);
@@ -132,6 +134,8 @@ public class Axteroids extends Application {
 	void shipHit()
 	{
 		clearAllRocks();
+		ship.stop();
+		ship.center();
 		textNotification("FAIL", Color.RED);
 	}
 
