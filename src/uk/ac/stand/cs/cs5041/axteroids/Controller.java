@@ -23,7 +23,7 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	private InterfaceKitPhidget phidget;
 	private SpaceShip ship;
 
-	private int difficulty = 0;
+	private int difficulty = 0, brightness = 0;
 	private long lastSoundBomb = 0;
 
 	private Runnable soundBomb;
@@ -118,6 +118,7 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 			break;
 			
 		case LIGHT_INDEX:
+			brightness = se.getValue();
 			break;
 		}
 	}
@@ -152,5 +153,9 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 		} catch (PhidgetException e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	public int getBrightness() {
+		return brightness;
 	}
 }

@@ -1,4 +1,5 @@
 package uk.ac.stand.cs.cs5041.axteroids;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.geometry.Point2D;
@@ -25,7 +26,7 @@ class SpaceShip {
 		center();
 		stop();
 	}
-
+	
 	public void updatePosition(double sizeSceneX, double sizeSceneY) {
 		position = position.add(velocity.getX(), velocity.getY());
 		jumpBounderies(sizeSceneX, sizeSceneY);

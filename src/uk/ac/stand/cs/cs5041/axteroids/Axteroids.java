@@ -20,6 +20,7 @@ import javafx.util.Duration;
 
 public class Axteroids extends Application {
 
+	Label scoreLabel;
 	SpaceShip ship;
 	Scene scene;
 	BorderPane root;
@@ -53,21 +54,40 @@ public class Axteroids extends Application {
 		startTimer();
 		controller = new Controller(ship, () -> soundBomb());
 
-		scene.setOnKeyPressed(ke -> { if(ke.getCode() == KeyCode.SPACE) firing = true; });
-		scene.setOnKeyReleased(ke -> { if(ke.getCode() == KeyCode.SPACE) firing = false; });
+		scene.setOnKeyPressed(ke -> {
+			if (ke.getCode() == KeyCode.SPACE)
+				firing = true;
+		});
+		scene.setOnKeyReleased(ke -> {
+			if (ke.getCode() == KeyCode.SPACE)
+				firing = false;
+		});
 
+		scoreLabel();
 		textNotification("BEGIN", Color.GREEN);
 		soundBombReadyLabel();
 	}
-	
-	void soundBombReadyLabel()
-	{
+
+	public final void setScore(int value) {
+		score = value;
+		scoreLabel.setText("Score: " + score);
+	}
+
+	void scoreLabel() {
+		scoreLabel = new Label("Score: 0");
+		scoreLabel.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
+		scoreLabel.setPadding(new Insets(20, 0, 0, 20));
+		scoreLabel.setTextFill(Color.GREEN);
+		root.setTop(scoreLabel);
+	}
+
+	void soundBombReadyLabel() {
 		Label l = new Label("SOUND BOMB READY!");
 		l.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
-		l.setPadding(new Insets(10, 0, 0, 10));
+		l.setPadding(new Insets(0, 0, 20, 20));
 		l.setTextFill(Color.DARKVIOLET);
 		l.visibleProperty().bind(controller.isSoundBombReady);
-		root.setTop(l);
+		root.setBottom(l);
 	}
 
 	private void startTimer() {
@@ -84,16 +104,18 @@ public class Axteroids extends Application {
 		updateMissiles();
 		update();
 		controller.update();
-		
-		if(firing)
-		{
+
+		if (firing) {
 			fireMissile();
 		}
 	}
 
 	void soundBomb() {
 		textNotification("SOUND BOMB!", Color.BLUEVIOLET);
-		Platform.runLater(() -> clearAllRocks());
+		Platform.runLater(() -> {
+			clearAllRocks();
+			setScore(score + 100);
+		});
 	}
 
 	void textNotification(String text, Color colour) {
@@ -135,9 +157,8 @@ public class Axteroids extends Application {
 		missiles.add(m);
 		root.getChildren().add(m.circle);
 	}
-	
-	void shipHit()
-	{
+
+	void shipHit() {
 		clearAllRocks();
 		ship.stop();
 		ship.center();
@@ -171,7 +192,7 @@ public class Axteroids extends Application {
 			r.update(scene.getWidth(), scene.getHeight());
 			if (r.isHit(ship.position, 8)) {
 				shipHit();
-				score = 0;
+				setScore(0);
 				return;
 			}
 
@@ -180,7 +201,7 @@ public class Axteroids extends Application {
 				if (m.isHit(r.position, r.radius)) {
 					missilesHit.add(m);
 					destroyed.add(r);
-					score++;
+					setScore(score + 1);
 				}
 			}
 			removeMissiles(missilesHit);
