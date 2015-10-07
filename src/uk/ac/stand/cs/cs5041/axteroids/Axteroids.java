@@ -1,22 +1,28 @@
 package uk.ac.stand.cs.cs5041.axteroids;
 
 import java.util.ArrayList;
-import javafx.animation.AnimationTimer;
-import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.animation.*;
+import javafx.application.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Axteroids extends Application {
 
+	Label soundBombLabel;
 	SpaceShip ship;
 	Scene scene;
-	Pane root;
+	BorderPane root;
 	Controller controller;
 	AnimationTimer timer;
 	int rockSpawnDelay = 100;
@@ -31,19 +37,28 @@ public class Axteroids extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		root = new Pane();
+		root = new BorderPane();
 		ship = new SpaceShip();
 
 		root.getChildren().add(ship.polygon);
+
+		soundBombLabel = new Label("SOUND BOMB!");
+		soundBombLabel.setFont(Font.font(50));
+		soundBombLabel.setOpacity(0);
+		soundBombLabel.setAlignment(Pos.CENTER);
+		soundBombLabel.setTextFill(Color.BLUEVIOLET);
+
+		root.setCenter(soundBombLabel);
+		root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+
 		scene = new Scene(root, 800, 600);
-		scene.setFill(Color.BLACK);
 
 		stage.setTitle("Axteroids");
 		stage.setScene(scene);
 		stage.show();
 
 		startTimer();
-		controller = new Controller(ship, () -> Platform.runLater(() -> clearAllRocks()));
+		controller = new Controller(ship, () -> soundBomb());
 
 		scene.setOnKeyPressed(ke -> {
 			processKeyPress(ke, true);
@@ -75,6 +90,28 @@ public class Axteroids extends Application {
 		updateMissiles();
 		update();
 		controller.update();
+	}
+
+	void soundBomb() {
+		FadeTransition in = new FadeTransition(Duration.millis(300), soundBombLabel);
+		in.setFromValue(0.0);
+		in.setToValue(1.0);
+		
+		FadeTransition out = new FadeTransition(Duration.millis(1000), soundBombLabel);
+		out.setFromValue(1.0);
+		out.setToValue(0);
+
+		in.setOnFinished(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent event) {
+		    	Platform.runLater(() -> out.play());
+		    }
+		});
+
+		Platform.runLater(() -> 
+		{
+			clearAllRocks();
+			in.play();
+		});
 	}
 
 	void fireMissile() {
