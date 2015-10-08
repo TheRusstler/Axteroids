@@ -56,7 +56,7 @@ public class Rock {
 		pos = randomSpawnPosition(sizeSceneX, sizeSceneY);
 		vel = randomVelocity(pos, sizeSceneX, sizeSceneY);
 
-		newRock = new Rock(pos, vel, 10 + rand.nextInt(3), color);
+		newRock = new Rock(pos, vel, 5 + rand.nextInt(3), color);
 		newRock.update(sizeSceneX, sizeSceneY);
 		
 		return newRock;

@@ -26,11 +26,12 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 	private int difficulty = 0, brightness = 0;
 	private long lastSoundBomb = 0;
 
-	private Runnable soundBomb;
+	private Runnable soundBomb, brightnessChanged;
 
-	public Controller(SpaceShip ship, Runnable soundBomb) {
+	public Controller(SpaceShip ship, Runnable soundBomb, Runnable brightnessChanged) {
 		this.ship = ship;
 		this.soundBomb = soundBomb;
+		this.brightnessChanged = brightnessChanged;
 		registerEvents();
 	}
 
@@ -119,6 +120,7 @@ public class Controller implements AttachListener, InputChangeListener, SensorCh
 			
 		case LIGHT_INDEX:
 			brightness = se.getValue();
+			brightnessChanged.run();
 			break;
 		}
 	}

@@ -36,7 +36,7 @@ public class Axteroids extends Application {
 		ship = new SpaceShip();
 		view.addSpaceShip(ship);
 		
-		controller = new Controller(ship, () -> soundBomb());
+		controller = new Controller(ship, () -> soundBomb(), () -> brightnessChanged());
 
 		view.getScene().setOnKeyPressed(ke -> {
 			if (ke.getCode() == KeyCode.SPACE)
@@ -52,12 +52,11 @@ public class Axteroids extends Application {
 		view.notify("BEGIN", Color.GREEN);
 		startTimer();
 	}
-
-	public final void setScore(int value) {
-		score = value;
-		//scoreLabel.setText("Score: " + score);
+	
+	private void brightnessChanged()
+	{
+		view.updateColours(controller.getBrightness());
 	}
-
 
 	private void startTimer() {
 		new AnimationTimer() {
@@ -83,7 +82,7 @@ public class Axteroids extends Application {
 		view.notify("SOUND BOMB!", Color.BLUEVIOLET);
 		Platform.runLater(() -> {
 			clearAllRocks();
-			setScore(score + 100);
+			view.addScore(100);
 		});
 	}
 
@@ -133,7 +132,7 @@ public class Axteroids extends Application {
 			r.update(View.WIDTH, View.HEIGHT);
 			if (r.isHit(ship.position, 8)) {
 				shipHit();
-				setScore(0);
+				view.resetScore();
 				return;
 			}
 
@@ -142,7 +141,7 @@ public class Axteroids extends Application {
 				if (m.isHit(r.position, r.radius)) {
 					missilesHit.add(m);
 					destroyed.add(r);
-					setScore(score + 1);
+					view.addScore(1);
 				}
 			}
 			removeMissiles(missilesHit);

@@ -4,7 +4,6 @@ import java.util.Collection;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,6 +28,7 @@ public class View {
 
 	private Scene scene;
 	private Label score, soundBombReady, notification;
+	private int scoreValue = 0;
 
 	private BorderPane root;
 
@@ -42,6 +42,34 @@ public class View {
 		stage.setScene(scene);
 		stage.show();
 		createLabels();
+	}
+	
+	public void updateColours(int brightness)
+	{
+		brightness = (int)((255/1000d)*brightness);
+		
+		final int newColor = brightness;
+
+		Platform.runLater(() -> {
+			root.setBackground(new Background(new BackgroundFill(Color.rgb(newColor, newColor, newColor), null, null)));
+		});
+	}
+	
+	public void addScore(int points)
+	{
+		scoreValue += points;
+		updateScore();
+	}
+	
+	public void resetScore()
+	{
+		scoreValue = 0;
+		updateScore();
+	}
+	
+	private void updateScore()
+	{
+		score.setText("Score: " + scoreValue);
 	}
 
 	public void addSpaceShip(SpaceShip ship) {
