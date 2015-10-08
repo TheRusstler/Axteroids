@@ -20,11 +20,12 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * View manages the user interface & draws objects on screen.
+ */
 public class View {
 
 	public static final int WIDTH = 800, HEIGHT = 600;
-
-	private SpaceShip ship;
 
 	private Scene scene;
 	private Label score, soundBombReady, notification;
@@ -43,37 +44,32 @@ public class View {
 		stage.show();
 		createLabels();
 	}
-	
-	public void updateColours(int brightness)
-	{
-		brightness = (int)((255/1000d)*brightness);
-		
+
+	public void updateColours(int brightness) {
+		brightness = (int) ((255 / 1000d) * brightness);
+
 		final int newColor = brightness;
 
 		Platform.runLater(() -> {
 			root.setBackground(new Background(new BackgroundFill(Color.rgb(newColor, newColor, newColor), null, null)));
 		});
 	}
-	
-	public void addScore(int points)
-	{
+
+	public void addScore(int points) {
 		scoreValue += points;
 		updateScore();
 	}
-	
-	public void resetScore()
-	{
+
+	public void resetScore() {
 		scoreValue = 0;
 		updateScore();
 	}
-	
-	private void updateScore()
-	{
+
+	private void updateScore() {
 		score.setText("Score: " + scoreValue);
 	}
 
 	public void addSpaceShip(SpaceShip ship) {
-		this.ship = ship;
 		root.getChildren().add(ship.polygon);
 	}
 
@@ -131,9 +127,8 @@ public class View {
 			in.play();
 		});
 	}
-	
-	void setSoundBombReadyBinding(BooleanProperty observable)
-	{
+
+	void setSoundBombReadyBinding(BooleanProperty observable) {
 		soundBombReady.visibleProperty().bind(observable);
 	}
 

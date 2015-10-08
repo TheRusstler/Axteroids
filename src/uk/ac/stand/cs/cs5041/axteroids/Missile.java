@@ -3,6 +3,9 @@ package uk.ac.stand.cs.cs5041.axteroids;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
+/**
+ * Missiles are fired from the ship and have the ability to destroy rocks
+ */
 public class Missile extends Rock {
 
 	public boolean isExploded = false;

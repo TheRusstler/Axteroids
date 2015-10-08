@@ -9,14 +9,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Axteroids extends Application {
-	
+
 	private View view;
 
 	SpaceShip ship;
 	Controller controller;
-	
+
 	AnimationTimer timer;
-	
+
 	int rockSpawnDelay = 100;
 	int difficulty = 0, score = 0;
 	boolean firing = false;
@@ -35,7 +35,7 @@ public class Axteroids extends Application {
 
 		ship = new SpaceShip();
 		view.addSpaceShip(ship);
-		
+
 		controller = new Controller(ship, () -> soundBomb(), () -> brightnessChanged());
 
 		view.getScene().setOnKeyPressed(ke -> {
@@ -46,15 +46,14 @@ public class Axteroids extends Application {
 			if (ke.getCode() == KeyCode.SPACE)
 				firing = false;
 		});
-		
+
 		view.setSoundBombReadyBinding(controller.isSoundBombReadyProperty());
 
 		view.notify("BEGIN", Color.GREEN);
 		startTimer();
 	}
-	
-	private void brightnessChanged()
-	{
+
+	private void brightnessChanged() {
 		view.updateColours(controller.getBrightness());
 	}
 

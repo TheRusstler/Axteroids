@@ -8,6 +8,9 @@ import com.phidgets.event.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+/**
+ * Controller manages phidgets and associated events
+ */
 public class Controller implements AttachListener, InputChangeListener, SensorChangeListener {
 
 	static final int IK_SERIAL = 274071, SERVO_SERIAL = 306019;

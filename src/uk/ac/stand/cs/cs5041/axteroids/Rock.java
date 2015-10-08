@@ -5,6 +5,9 @@ import java.util.Random;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 
+/**
+ * Rocks are spherical objects which can destroy a ship
+ */
 public class Rock {
 	static Random rand = new Random();
 
@@ -25,9 +28,8 @@ public class Rock {
 		circle.setTranslateY(position.getY());
 		jumpBounderies(sizeSceneX, sizeSceneY);
 	}
-	
-	public boolean isHit(Point2D point, int rad)
-	{
+
+	public boolean isHit(Point2D point, int rad) {
 		return point.distance(this.position) < (rad + this.radius);
 	}
 
@@ -46,11 +48,14 @@ public class Rock {
 		}
 	}
 
+	/**
+	 * SpawnRock creates a rock with random position and initial velocity.
+	 */
 	public static Rock SpawnRock(double sizeSceneX, double sizeSceneY) {
 		Rock newRock;
 		Point2D pos, vel;
 		Color color;
-		
+
 		color = Color.rgb(100 + rand.nextInt(100), 100 + rand.nextInt(100), 255);
 
 		pos = randomSpawnPosition(sizeSceneX, sizeSceneY);
@@ -58,7 +63,7 @@ public class Rock {
 
 		newRock = new Rock(pos, vel, 5 + rand.nextInt(3), color);
 		newRock.update(sizeSceneX, sizeSceneY);
-		
+
 		return newRock;
 	}
 
