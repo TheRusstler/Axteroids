@@ -12,3 +12,4 @@ Video game based on space-shooter Asteroids.
 ![controller](screenshots/controller.jpg "controller")
 
 
+See the [full project report](AxteroidsReport.pdf) for project details.
